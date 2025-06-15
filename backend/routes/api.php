@@ -44,11 +44,5 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
-    // In routes/api.php  
-Route::middleware('auth:api')->get('/auth/test', function() {
-    return response()->json([
-        'message' => 'JWT is working',
-        'user' => auth()->user()
-    ]);
-});
+    
 });
