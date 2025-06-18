@@ -23,14 +23,16 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /app
 
-# Copy composer files
-COPY composer.json composer.lock ./
-
-# Install dependencies
-RUN composer install --no-dev --optimize-autoloader --no-interaction
-
-# Copy application
+# Copy application first (this was the issue!)
 COPY . .
+
+# Install dependencies (after copying application)
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
+
+# Run Laravel post-install scripts manually
+RUN php artisan package:discover --ansi || true
+RUN php artisan config:cache || true
+RUN php artisan route:cache || true
 
 # Create storage directories and set permissions
 RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views
